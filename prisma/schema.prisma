@@ -47,13 +47,13 @@ model Post{
   content String?
   image String?
 
-  createAt DateTime @default(now())
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // 1-n relaton (user can have many posts - post only posted by 1 user) // cascade -> delete all posts if author is deleted
   comments Comment[]
-  likkes  Like[] 
+  likes  Like[] 
   notifications Notification[]
 }
 
@@ -62,7 +62,7 @@ model Comment {
   content String
   authorId String
   postId String
-  createAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
   //Relations
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
