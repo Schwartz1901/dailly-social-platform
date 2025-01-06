@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { TargetIcon } from "lucide-react";
 
 
 
@@ -67,4 +68,97 @@ export async function getDbUserId() {
 
     if (!user) throw new Error("User not found");
     return user.id;
+}
+
+export async function getRandomUsers() {
+    try {
+        const userId = await getDbUserId();
+
+        // get 3 random users exclude ourselves and user we are following
+        const randomUsers = await prisma.user.findMany({
+            where:{
+                AND:[
+                    {NOT:{id:userId}},
+                    {
+                        NOT:{
+                            followers:{
+                                some:{
+                                    followerId:userId
+                                }
+                            }
+                        }
+                    },
+                ]  
+            },
+            select:{
+                id:true,
+                name:true,
+                username:true,
+                image:true,
+                _count:{
+                    select:{
+                        followers:true,
+                    }
+                }
+
+            },
+            take: 3,
+        })
+        return randomUsers;
+    } catch (error) {
+        console.log("Error in fetching random users", error);
+        return [];
+    }
+}
+
+export async function toggleFollow(targetUserId:string) {
+    try {
+        const userId = await getDbUserId();
+
+        if(userId === targetUserId) throw new Error("You can't follow yourself");
+
+        const existingFollow = await prisma.follows.findUnique({
+            where:{
+                followerId_followingId: {
+                    followerId: userId,
+                    followingId: targetUserId
+                }
+            }
+        })
+
+        if (existingFollow) {
+            // unfollow
+            await prisma.follows.delete({
+                where:{
+                    followerId_followingId: {
+                        followerId: userId,
+                        followingId: targetUserId
+                    }
+                }
+            })
+        } else {
+            // follow
+            // transaction : all success or nothing success. In this case we are creating a follow and a notification and make sure both of them success or failed together
+            await prisma.$transaction([
+                prisma.follows.create({
+                    data:{
+                        followerId: userId,
+                        followingId: targetUserId
+                    }
+                }),
+                prisma.notification.create({
+                    data:{
+                        type: "FOLLOW",
+                        userId: targetUserId, //user being followed
+                        creatorId: userId, // user following
+                    }
+                })
+            ])
+        }
+
+        return{success:true}
+    } catch (error) {
+        console.log("Error in toggleFollow", error);
+        return {success:false, error: "Error toggling follow"}
+    }
 }
