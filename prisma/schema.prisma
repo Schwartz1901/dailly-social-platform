@@ -22,7 +22,7 @@ model User{
   name String?
   bio String?
   image String?
-  locaton String?
+  location String?
   website String?
   createdAt DateTime @default(now()) // member since 
   updatedAt DateTime @updatedAt // last updated
