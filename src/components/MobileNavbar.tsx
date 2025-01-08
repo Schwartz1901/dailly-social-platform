@@ -17,13 +17,8 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 
-type User = Awaited<ReturnType<typeof currentUser>>
 
-interface MobileNavbarProps {
-  user: User
-}
-
-async function MobileNavbar({user} : MobileNavbarProps) {
+async function MobileNavbar() {
 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isSignedIn } = useAuth();
@@ -60,7 +55,7 @@ async function MobileNavbar({user} : MobileNavbarProps) {
               </Link>
             </Button>
 
-            {(isSignedIn && user)  ? (
+            {isSignedIn   ? (
               <>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
                   <Link href="/notifications">
@@ -69,9 +64,7 @@ async function MobileNavbar({user} : MobileNavbarProps) {
                   </Link>
                 </Button>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
-                  <Link href={`/profile/${
-                user.username ?? user.emailAddresses[0].emailAddress.split("@")[0]
-              }`}>
+                  <Link href="/profile">
                     <UserIcon className="w-4 h-4" />
                     Profile
                   </Link>
