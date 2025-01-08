@@ -23,7 +23,7 @@ export async function createPost(content:string, image:string) {
         revalidatePath("/"); //purge the cache for the home pgae
         return {success:true, post}
     } catch (error) {
-        console.log("Error in createPost", error);
+        console.error("Error in createPost", error);
         return {success:false, error: "Failed to create post"}
     }
 }
@@ -73,7 +73,7 @@ export async function getPosts() {
         });
         return posts;
     } catch (error) {
-        console.log("Error in getPosts", error);
+        console.error("Error in getPosts", error);
         throw new Error("Failed to get posts");
     }
 }

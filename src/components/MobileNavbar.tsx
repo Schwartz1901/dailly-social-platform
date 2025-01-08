@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import {
   BellIcon,
   HomeIcon,
@@ -7,6 +6,7 @@ import {
   MenuIcon,
   MoonIcon,
   SunIcon,
+  Type,
   UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,14 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 
-async function MobileNavbar() {
-  const user = await currentUser()
+type User = Awaited<ReturnType<typeof currentUser>>
+
+interface MobileNavbarProps {
+  user: User
+}
+
+async function MobileNavbar({user} : MobileNavbarProps) {
+
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isSignedIn } = useAuth();
   const { theme, setTheme } = useTheme();
