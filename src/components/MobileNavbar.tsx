@@ -6,7 +6,6 @@ import {
   MenuIcon,
   MoonIcon,
   SunIcon,
-  Type,
   UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,10 +14,8 @@ import { useState } from "react";
 import { useAuth, SignInButton, SignOutButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { currentUser } from "@clerk/nextjs/server";
 
-
-async function MobileNavbar() {
+function MobileNavbar() {
 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isSignedIn } = useAuth();
@@ -55,7 +52,7 @@ async function MobileNavbar() {
               </Link>
             </Button>
 
-            {isSignedIn   ? (
+            {isSignedIn ? (
               <>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
                   <Link href="/notifications">
